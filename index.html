@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIGHWAY | لوحة المنسقين</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;500;700;900&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="bg-pattern"></div>
+
+    <header>
+        <h1 class="brand-title">
+            <span class="brand-text-1">HIGHWAY</span> <span class="brand-text-2">Delivery</span>
+        </h1>
+        <div class="brand-subtitle">لوحة تحكم المنسقين 🛠️</div>
+    </header>
+
+    <div class="main-wrapper">
+        
+        <div id="home-page" class="section active">
+            <div class="card-grid">
+                <div class="card" onclick="navigateTo('order-prep-list')">
+                    <div class="card-icon-box"><i class="fa-solid fa-utensils"></i></div>
+                    <h3>تحضير طلب</h3>
+                    <p>إرسال تفاصيل طلب جديد للمجموعات</p>
+                </div>
+                <div class="card" onclick="navigateTo('confirm-receipt-page')">
+                    <div class="card-icon-box"><i class="fa-solid fa-truck-fast"></i></div>
+                    <h3>تأكيد استلام</h3>
+                    <p>إبلاغ العميل بتحرك الكابتن</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="order-prep-list" class="section">
+            <div class="back-nav" onclick="navigateTo('home-page')"><i class="fa-solid fa-arrow-right"></i> رجوع</div>
+            <h2 style="margin-bottom:20px; text-align:center;">اختر نقطة الاستلام</h2>
+            <div class="card-grid">
+                <div class="card" onclick="openPrepForm('ماكدونالدز')"><h3>ماكدونالدز</h3></div>
+                <div class="card" onclick="openPrepForm('شاورما الريف')"><h3>شاورما الريف</h3></div>
+                <div class="card" onclick="openPrepForm('شامخ للمناسف')"><h3>شامخ للمناسف</h3></div>
+                <div class="card" onclick="openPrepForm('معجنات سنابل البركة')"><h3>معجنات سنابل البركة</h3></div>
+                <div class="card" onclick="openPrepForm('قهوة ابو صالح')"><h3>قهوة ابو صالح</h3></div>
+                <div class="card" onclick="openPrepForm('مطعم حماده')"><h3>مطعم حماده</h3></div>
+                <div class="card" style="border: 2px dashed var(--primary)" onclick="openPrepForm('other')">
+                    <h3><i class="fa-solid fa-plus"></i> نقطة استلام أخرى</h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="prep-form-page" class="section">
+            <div class="back-nav" onclick="navigateTo('order-prep-list')"><i class="fa-solid fa-arrow-right"></i> رجوع</div>
+            <div class="form-container">
+                <h3 id="prep-title" style="margin-bottom:20px; color:var(--primary);">تحضير طلب</h3>
+                
+                <div class="input-group" id="other-location-group" style="display:none;">
+                    <label>اسم نقطة الاستلام</label>
+                    <input type="text" id="custom-location" placeholder="أدخل اسم المكان">
+                </div>
+
+                <div class="input-group">
+                    <label>رقم الطلب</label>
+                    <input type="text" id="order-number" placeholder="مثال: 55">
+                </div>
+
+                <div class="input-group">
+                    <label>قيمة الطلب (د.أ)</label>
+                    <input type="number" id="order-value" placeholder="0.00">
+                </div>
+
+                <div class="input-group">
+                    <label>ملاحظات أخرى</label>
+                    <textarea id="order-notes" rows="3" placeholder="أي تعليمات إضافية..."></textarea>
+                </div>
+
+                <button class="btn-send" onclick="sendPrepOrder()">إرسال عبر واتساب <i class="fa-brands fa-whatsapp"></i></button>
+            </div>
+        </div>
+
+        <div id="confirm-receipt-page" class="section">
+            <div class="back-nav" onclick="navigateTo('home-page')"><i class="fa-solid fa-arrow-right"></i> رجوع</div>
+            <div class="form-container">
+                <h3 style="margin-bottom:20px; color:var(--primary);">تأكيد إسناد الطلب</h3>
+                
+                <div class="input-group">
+                    <label>اسم الكابتن</label>
+                    <input type="text" id="captain-name" placeholder="اسم الكابتن">
+                </div>
+
+                <div class="input-group">
+                    <label>وقت الوصول المتوقع</label>
+                    <input type="time" id="arrival-time">
+                </div>
+
+                <div class="input-group">
+                    <label>تكملة رقم الطلب (المتغير X)</label>
+                    <div style="display:flex; align-items:center; direction:ltr; gap:5px;">
+                        <span id="date-prefix" style="font-weight:bold; color:#888;">ORD#260116-</span>
+                        <input type="text" id="order-suffix" placeholder="XXX-XX" style="text-align:center;">
+                    </div>
+                </div>
+
+                <button class="btn-send" onclick="sendConfirmation()">إرسال إشعار العميل <i class="fa-brands fa-whatsapp"></i></button>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        &copy; 2026 HIGHWAY Delivery | لوحة التنسيق الداخلي
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
