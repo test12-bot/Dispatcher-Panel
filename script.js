@@ -1,9 +1,34 @@
-// --- إعدادات الأيقونات المتحركة والبيانات عند التحميل ---
+// --- وظيفة استخراج التاريخ بصيغة YYMMDD من جهاز المستخدم ---
+function getFormattedDate() {
+    const now = new Date();
+    
+    // السنة (آخر رقمين، مثلاً 2026 تصبح 26)
+    const year = now.getFullYear().toString().slice(-2);
+    
+    // الشهر (يضاف 1 لأن الأشهر تبدأ من 0، و padStart للتأكد من وجود خانتين)
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    
+    // اليوم (padStart للتأكد من وجود خانتين)
+    const day = now.getDate().toString().padStart(2, '0');
+    
+    return `${year}${month}${day}`; // النتيجة: 260116
+}
+
+// وظيفة لتحديث النص الظاهر في نموذج تأكيد الاستلام
+function updateDateDisplay() {
+    const datePrefixElement = document.getElementById('date-prefix');
+    if (datePrefixElement) {
+        const currentDate = getFormattedDate();
+        datePrefixElement.innerText = `ORD#${currentDate}-`;
+    }
+}
+
+// --- عند تحميل الصفحة بالكامل ---
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. توليد أيقونات الخلفية المتحركة
     const container = document.getElementById('bg-pattern');
     const icons = ['fa-box', 'fa-motorcycle', 'fa-map-location-dot', 'fa-clock'];
     
-    // توليد أيقونات الخلفية
     for(let i=0; i<15; i++) {
         const icon = document.createElement('i');
         icon.className = `fa-solid ${icons[Math.floor(Math.random() * icons.length)]} food-icon`;
@@ -14,26 +39,19 @@ document.addEventListener('DOMContentLoaded', () => {
         container.appendChild(icon);
     }
     
-    // تحديث بادئة التاريخ تلقائياً بناءً على تاريخ اليوم
-    updateOrderPrefix();
+    // 2. تحديث التاريخ لأول مرة
+    updateDateDisplay();
 });
-
-function updateOrderPrefix() {
-    const now = new Date();
-    const year = now.getFullYear().toString().slice(-2);
-    const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    const day = now.getDate().toString().padStart(2, '0');
-    const dateStr = `${year}${month}${day}`;
-    const prefixElement = document.getElementById('date-prefix');
-    if (prefixElement) {
-        prefixElement.innerText = `ORD#${dateStr}-`;
-    }
-}
 
 let selectedLocation = '';
 
 // وظيفة التنقل بين الصفحات
 function navigateTo(id) {
+    // إذا كان المنسق سيدخل لصفحة تأكيد الاستلام، نحدث التاريخ فوراً
+    if (id === 'confirm-receipt-page') {
+        updateDateDisplay();
+    }
+
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -63,7 +81,7 @@ function sendPrepOrder() {
     const finalLocation = (selectedLocation === 'other') ? document.getElementById('custom-location').value : selectedLocation;
 
     if(!finalLocation || !orderNum || !orderVal) {
-        alert("يرجى تعبئة الحقول الأساسية (الموقع، رقم الطلب، القيمة)");
+        alert("يرجى تعبئة الحقول الأساسية");
         return;
     }
 
@@ -86,14 +104,16 @@ function sendConfirmation() {
     const captain = document.getElementById('captain-name').value;
     const timeRaw = document.getElementById('arrival-time').value;
     const suffix = document.getElementById('order-suffix').value;
+    
+    // نأخذ التاريخ المحدث حالياً من الواجهة
     const datePrefix = document.getElementById('date-prefix').innerText;
 
     if(!captain || !timeRaw || !suffix) {
-        alert("يرجى تعبئة كافة الحقول (اسم الكابتن، الوقت، رقم الطلب)");
+        alert("يرجى تعبئة كافة الحقول");
         return;
     }
 
-    // تحويل الوقت من 24 ساعة إلى AM/PM
+    // تحويل الوقت من نظام 24 إلى نظام 12 ساعة (AM/PM)
     let [hours, minutes] = timeRaw.split(':');
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12 || 12;
