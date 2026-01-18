@@ -190,9 +190,30 @@ input:focus {
 }
 
 footer {
-    background: var(--dark-text);
-    color: white;
-    padding: 20px;
+    background-color: var(--dark-text);
+    color: var(--cream);
+    padding: 40px 20px 30px;
     text-align: center;
+    margin-top: auto;
+    border-top: 5px solid var(--primary);
+}
+
+.footer-content h4 {
+    color: var(--secondary);
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+.footer-content p {
+    color: #b2bec3;
+    line-height: 1.6;
+    font-size: 0.9rem;
+    max-width: 500px;
+    margin: 0 auto 30px;
+}
+.copyright {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 20px;
     font-size: 0.8rem;
+    opacity: 0.6;
+    font-family: var(--font-en);
 }
