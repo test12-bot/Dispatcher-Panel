@@ -62,7 +62,7 @@ function openPrepForm(location) {
 function sendPrepOrder() {
     const orderNum = document.getElementById('order-number').value;
     const orderVal = document.getElementById('order-value').value;
-    const notes = document.getElementById('order-notes').value || "لا يوجد";
+    const notes = document.getElementById('order-notes').value || "لا يوجد ملاحظات";
     const finalLocation = (selectedLocation === 'other') ? document.getElementById('custom-location').value : selectedLocation;
 
     if(!finalLocation || !orderNum || !orderVal) {
@@ -72,9 +72,9 @@ function sendPrepOrder() {
 
     // بناء النص الخام
     const rawMsg = `*📢 طلب جديد متاح | رقم #${orderNum}*\n` +
-                   `*🏪 نقطه الاستلام*: *${finalLocation}*\n` +
-                   `*💵 مطلوب دفعه*: *${orderVal}* د.أ\n` +
-                   `*📝 ملاحظات*: *${notes}*\n\n` +
+                   `*🏪 نقطه الاستلام*: ${finalLocation}\n` +
+                   `*💵 مطلوب دفعه*: ${orderVal} د.أ\n` +
+                   `*📝 ملاحظات*: ${notes}\n\n` +
                    `———————————————\n` +
                    `*⚠️ تعليمات القبول:*\n` +
                    `*1- ⛔️ تأكد من جاهزيتك وتوفر المبلغ.*\n` +
@@ -106,8 +106,8 @@ function sendConfirmation() {
 
     const rawMsg = `📢 تنبيه: الكابتن في الطريق إليكم!\n` +
                    `تم إسناد الطلب للكابتن *${captain}*\n` +
-                   `الآن في طريقه لإستلام الطلب رقم *${datePrefix}${suffix}*\n` +
-                   `⏰ وقت الوصول المتوقع *${timeFormatted}*\n\n` +
+                   `الآن في طريقه لإستلام الطلب رقم ${datePrefix}${suffix}\n` +
+                   `⏰ وقت الوصول المتوقع ${timeFormatted}\n\n` +
                    `شكر لكم على سرعة التجاوب واحترافيتكم العالية 🩵\n` +
                    `HIGHWAY Delivery | The Fastest Way to Your Orders`;
 
