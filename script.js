@@ -108,7 +108,7 @@ function sendConfirmation() {
                    `تم إسناد الطلب للكابتن *${captain}*\n` +
                    `الآن في طريقه لإستلام الطلب رقم ${datePrefix}${suffix}\n` +
                    `⏰ وقت الوصول المتوقع ${timeFormatted}\n\n` +
-                   `شكر لكم على سرعة التجاوب واحترافيتكم العالية 🩵\n` +
+                   `شكرًا لكم على سرعة التجاوب واحترافيتكم العالية 🩵\n` +
                    `HIGHWAY Delivery | The Fastest Way to Your Orders`;
 
     const encodedMsg = encodeURIComponent(rawMsg);
