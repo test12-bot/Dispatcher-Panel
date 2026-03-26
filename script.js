@@ -80,27 +80,25 @@ function openPrepForm(location) {
     navigateTo('prep-form-page');
 }
 
-// === إرسال رسائل الواتساب ===
-function sendPrepOrder() {
-    // استخدام trim() لتجاهل المسافات الفارغة إذا أدخلها المستخدم بالخطأ
+// === إرسال رسائل الواتساب ===function sendPrepOrder() {
     const orderNum = document.getElementById('order-number').value.trim();
     const orderVal = document.getElementById('order-value').value.trim();
     const notes = document.getElementById('order-notes').value.trim() || "لا يوجد";
-    
-    const finalLocation = (selectedLocation === 'other') 
-        ? document.getElementById('custom-location').value.trim() 
-        : selectedLocation;
+    const finalLocation = (selectedLocation === 'other') ? document.getElementById('custom-location').value.trim() : selectedLocation;
 
-    if (!finalLocation || !orderNum || !orderVal) {
-        alert("⚠️ يرجى تعبئة الحقول الأساسية (المكان، رقم الطلب، القيمة)");
+    // التحقق فقط من الحقول الإجبارية (المكان ورقم الطلب)
+    if(!finalLocation || !orderNum) {
+        alert("يرجى تعبئة الحقول الأساسية (المكان ورقم الطلب)");
         return;
     }
 
-    // بناء النص بشكل مقروء ونظيف
+    // منطق القيمة: إذا كانت فارغة نكتب "غير متوفر تفاصيل"
+    const displayValue = orderVal ? `${orderVal} د.أ` : "غير متوفر تفاصيل";
+
     const msg = `*📢 طلب جديد متاح | رقم #${orderNum}*\n` +
-                `*🏪 نقطة الاستلام*: ${finalLocation}\n` +
-                `*💵 مطلوب دفعه*: ${orderVal} د.أ\n` +
-                `*📝 ملاحظات*: ${notes}\n\n` +
+                `*🏪 نقطه الاستلام*: ${finalLocation}\n` +
+                `*💵 مطلوب دفعه*: ${displayValue}\n` +
+                `*📝 ملاحظات:*: ${notes}\n\n` +
                 `———————————————\n` +
                 `*⚠️ تعليمات القبول:*\n` +
                 `*1- ⛔️ تأكد من جاهزيتك وتوفر المبلغ.*\n` +
@@ -108,9 +106,9 @@ function sendPrepOrder() {
                 `*3- 🔄 سيتم تعيين الكابتن الأقرب بعد 30 ثانية.*\n\n` +
                 `*HIGHWAY Delivery | أسرع طريق لطلباتك 🩵.*`;
 
-    // استخدام encodeURIComponent يحمي الرابط من التكسر بسبب الرموز الخاصة
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 }
+
 
 function sendConfirmation() {
     const captain = document.getElementById('captain-name').value.trim();
