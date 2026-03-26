@@ -64,7 +64,7 @@ function sendPrepOrder() {
     const notes = document.getElementById('order-notes').value || "لا يوجد ملاحظات";
 
 
-    if(!finalLocation || !ordernum) {
+    if(!ordernum) {
         alert("يرجى تعبئة الحقول الأساسية");
         return;
     }
