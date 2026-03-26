@@ -73,7 +73,7 @@ function sendPrepOrder() {
     // بناء النص الخام
     const rawMsg = `*📢 طلب جديد متاح | رقم #${orderNum}*\n` +
                    `*🏪 نقطه الاستلام*: ${finalLocation}\n` +
-                   `*💵 مطلوب دفعه*: ${orderVal} د.أ\n` +
+                   `*💵 مطلوب دفعه*: ${orderVal} د.أ\n\n` +
                    `*📝 ملاحظات*: ${notes}\n\n` +
                    `———————————————\n` +
                    `*⚠️ تعليمات القبول:*\n` +
@@ -106,7 +106,7 @@ function sendConfirmation() {
 
     const rawMsg = `📢 تنبيه: الكابتن في الطريق إليكم!\n` +
                    `تم إسناد الطلب للكابتن *${captain}*\n` +
-                   `الآن في طريقه لإستلام الطلب رقم ${datePrefix}${suffix}\n\n` +
+                   `الآن في طريقه لإستلام الطلب رقم ${datePrefix}${suffix}\n` +
                    `⏰ وقت الوصول المتوقع ${timeFormatted}\n\n` +
                    `شكرًا لكم على سرعة التجاوب واحترافيتكم العالية 🩵\n` +
                    `HIGHWAY Delivery | The Fastest Way to Your Orders`;
