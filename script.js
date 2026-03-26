@@ -106,7 +106,7 @@ function sendConfirmation() {
 
     const rawMsg = `📢 تنبيه: الكابتن في الطريق إليكم!\n` +
                    `تم إسناد الطلب للكابتن *${captain}*\n` +
-                   `الآن في طريقه لإستلام الطلب رقم ${datePrefix}${suffix}\n` +
+                   `الآن في طريقه لإستلام الطلب رقم ${datePrefix}${suffix}\n\n` +
                    `⏰ وقت الوصول المتوقع ${timeFormatted}\n\n` +
                    `شكرًا لكم على سرعة التجاوب واحترافيتكم العالية 🩵\n` +
                    `HIGHWAY Delivery | The Fastest Way to Your Orders`;
