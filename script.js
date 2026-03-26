@@ -61,9 +61,8 @@ function openPrepForm(location) {
 function sendPrepOrder() {
     const orderNum = document.getElementById('order-number').value;
     const orderVal = document.getElementById('order-value').value || "غير متوفر تفاصيل";
-    const finalLocation = (selectedLocation === 'other') ? document.getElementById('custom-location').value : selectedLocation;
     const notes = document.getElementById('order-notes').value || "لا يوجد ملاحظات";
-    const finalLocation = (selectedLocation === 'other') ? document.getElementById('custom-location').value : selectedLocation;
+
 
     if(!finalLocation || !ordernum) {
         alert("يرجى تعبئة الحقول الأساسية");
