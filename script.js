@@ -1,130 +1,143 @@
-// --- وظيفة استخراج التاريخ بصيغة YYMMDD من جهاز المستخدم ---
+// === إعدادات وتوليد التاريخ ===
 function getFormattedDate() {
     const now = new Date();
-    
-    // السنة (آخر رقمين، مثلاً 2026 تصبح 26)
     const year = now.getFullYear().toString().slice(-2);
-    
-    // الشهر (يضاف 1 لأن الأشهر تبدأ من 0، و padStart للتأكد من وجود خانتين)
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
-    
-    // اليوم (padStart للتأكد من وجود خانتين)
     const day = now.getDate().toString().padStart(2, '0');
-    
-    return `${year}${month}${day}`; // النتيجة: 260116
+    return `${year}${month}${day}`; 
 }
 
-// وظيفة لتحديث النص الظاهر في نموذج تأكيد الاستلام
 function updateDateDisplay() {
     const datePrefixElement = document.getElementById('date-prefix');
     if (datePrefixElement) {
-        const currentDate = getFormattedDate();
-        datePrefixElement.innerText = `ORD#${currentDate}-`;
+        datePrefixElement.innerText = `ORD#${getFormattedDate()}-`;
     }
 }
 
-// --- عند تحميل الصفحة بالكامل ---
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. توليد أيقونات الخلفية المتحركة
+// === تأثيرات الخلفية المتحركة ===
+function generateBackgroundIcons() {
     const container = document.getElementById('bg-pattern');
-    const icons = ['fa-box', 'fa-motorcycle', 'fa-map-location-dot', 'fa-clock'];
+    if (!container) return;
     
-    for(let i=0; i<15; i++) {
+    const icons = ['fa-box', 'fa-motorcycle', 'fa-map-location-dot', 'fa-clock', 'fa-utensils'];
+    
+    for(let i = 0; i < 15; i++) {
         const icon = document.createElement('i');
-        icon.className = `fa-solid ${icons[Math.floor(Math.random() * icons.length)]} food-icon`;
-        icon.style.left = Math.random() * 100 + '%';
-        icon.style.top = Math.random() * 100 + '%';
-        icon.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
-        icon.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+        
+        icon.className = `fa-solid ${randomIcon} food-icon`;
+        icon.style.left = `${Math.random() * 100}%`;
+        icon.style.top = `${Math.random() * 100}%`;
+        icon.style.fontSize = `${Math.random() * 1.5 + 1}rem`;
+        icon.style.animationDuration = `${Math.random() * 10 + 10}s`;
+        icon.style.animationDelay = `${Math.random() * 5}s`; // يمنع بدء حركة كل الأيقونات في نفس اللحظة
+        
         container.appendChild(icon);
     }
-    
-    // 2. تحديث التاريخ لأول مرة
+}
+
+// === تهيئة الصفحة عند التحميل ===
+document.addEventListener('DOMContentLoaded', () => {
+    generateBackgroundIcons();
     updateDateDisplay();
 });
 
+// === التنقل وإدارة الواجهة ===
 let selectedLocation = '';
 
-// وظيفة التنقل بين الصفحات
 function navigateTo(id) {
-    // إذا كان المنسق سيدخل لصفحة تأكيد الاستلام، نحدث التاريخ فوراً
+    // تحديث التاريخ دائماً عند الدخول لصفحة تأكيد الاستلام
     if (id === 'confirm-receipt-page') {
         updateDateDisplay();
     }
 
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    const targetSection = document.getElementById(id);
+    if (targetSection) {
+        targetSection.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 }
 
-// فتح نموذج تحضير الطلب
 function openPrepForm(location) {
     selectedLocation = location;
     const otherGroup = document.getElementById('other-location-group');
     const title = document.getElementById('prep-title');
+    const customLocationInput = document.getElementById('custom-location');
     
-    if(location === 'other') {
+    if (location === 'other') {
         title.innerText = "نقطة استلام أخرى";
         otherGroup.style.display = 'block';
+        customLocationInput.value = ''; // تفريغ الحقل في حال كان ممتلئاً مسبقاً
     } else {
-        title.innerText = "تحضير طلب: " + location;
+        title.innerText = `تحضير طلب: ${location}`;
         otherGroup.style.display = 'none';
     }
+    
     navigateTo('prep-form-page');
 }
 
-// إرسال طلب تحضير (واتساب)
+// === إرسال رسائل الواتساب ===
 function sendPrepOrder() {
-    const orderNum = document.getElementById('order-number').value;
-    const orderVal = document.getElementById('order-value').value;
-    const notes = document.getElementById('order-notes').value || "لا يوجد";
-    const finalLocation = (selectedLocation === 'other') ? document.getElementById('custom-location').value : selectedLocation;
+    // استخدام trim() لتجاهل المسافات الفارغة إذا أدخلها المستخدم بالخطأ
+    const orderNum = document.getElementById('order-number').value.trim();
+    const orderVal = document.getElementById('order-value').value.trim();
+    const notes = document.getElementById('order-notes').value.trim() || "لا يوجد";
+    
+    const finalLocation = (selectedLocation === 'other') 
+        ? document.getElementById('custom-location').value.trim() 
+        : selectedLocation;
 
-    if(!finalLocation || !orderNum || !orderVal) {
-        alert("يرجى تعبئة الحقول الأساسية");
+    if (!finalLocation || !orderNum || !orderVal) {
+        alert("⚠️ يرجى تعبئة الحقول الأساسية (المكان، رقم الطلب، القيمة)");
         return;
     }
 
-    const msg = `*📢 طلب جديد متاح | رقم #${orderNum}*%0A` +
-                `*🏪 نقطه الاستلام*: ${finalLocation}%0A` +
-                `*💵 مطلوب دفعه*: ${orderVal} د.أ%0A` +
-                `*📝 ملاحظات:*: ${notes}%0A%0A` +
-                `———————————————%0A` +
-                `*⚠️ تعليمات القبول:*%0A` +
-                `*1- ⛔️ تأكد من جاهزيتك وتوفر المبلغ.*%0A` +
-                `*2- 📍أرسل موقعك المباشر (Live Location) للمنسق.*%0A` +
-                `*3- 🔄 سيتم تعيين الكابتن الأقرب بعد 30 ثانية.*%0A%0A` +
+    // بناء النص بشكل مقروء ونظيف
+    const msg = `*📢 طلب جديد متاح | رقم #${orderNum}*\n` +
+                `*🏪 نقطة الاستلام*: ${finalLocation}\n` +
+                `*💵 مطلوب دفعه*: ${orderVal} د.أ\n` +
+                `*📝 ملاحظات*: ${notes}\n\n` +
+                `———————————————\n` +
+                `*⚠️ تعليمات القبول:*\n` +
+                `*1- ⛔️ تأكد من جاهزيتك وتوفر المبلغ.*\n` +
+                `*2- 📍أرسل موقعك المباشر (Live Location) للمنسق.*\n` +
+                `*3- 🔄 سيتم تعيين الكابتن الأقرب بعد 30 ثانية.*\n\n` +
                 `*HIGHWAY Delivery | أسرع طريق لطلباتك 🩵.*`;
 
-    window.open(`https://wa.me/?text=${msg}`, '_blank');
+    // استخدام encodeURIComponent يحمي الرابط من التكسر بسبب الرموز الخاصة
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-// إرسال تأكيد الاستلام (واتساب)
 function sendConfirmation() {
-    const captain = document.getElementById('captain-name').value;
+    const captain = document.getElementById('captain-name').value.trim();
     const timeRaw = document.getElementById('arrival-time').value;
-    const suffix = document.getElementById('order-suffix').value;
-    
-    // نأخذ التاريخ المحدث حالياً من الواجهة
+    const suffix = document.getElementById('order-suffix').value.trim();
     const datePrefix = document.getElementById('date-prefix').innerText;
 
-    if(!captain || !timeRaw || !suffix) {
-        alert("يرجى تعبئة كافة الحقول");
+    if (!captain || !timeRaw || !suffix) {
+        alert("⚠️ يرجى تعبئة كافة الحقول (اسم الكابتن، وقت الوصول، التكملة الخاصة برقم الطلب)");
         return;
     }
 
-    // تحويل الوقت من نظام 24 إلى نظام 12 ساعة (AM/PM)
+    // تحويل الوقت من نظام 24 إلى 12 ساعة بشكل رياضي سليم
     let [hours, minutes] = timeRaw.split(':');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12;
-    const timeFormatted = `${hours}:${minutes} ${ampm}`;
+    let hoursInt = parseInt(hours, 10);
+    const ampm = hoursInt >= 12 ? 'PM' : 'AM';
+    hoursInt = hoursInt % 12 || 12; // تحويل الصفر إلى 12 (منتصف الليل/الظهيرة)
+    const timeFormatted = `${hoursInt}:${minutes} ${ampm}`;
 
-    const msg = `📢 تنبيه: الكابتن في الطريق إليكم!%0A` +
-                `تم إسناد الطلب للكابتن *${captain}*%0A` +
-                `الآن طريقه لإستلام الطلب رقم ${datePrefix}${suffix}%0A` +
-                `⏰ وقت الوصول المتوقع ${timeFormatted}%0A%0A` +
-                `شكر لكم على سرعة التجاوب واحترافيتكم العالية 🩵%0A` +
+    const fullOrderNumber = `${datePrefix}${suffix}`;
+
+    const msg = `📢 تنبيه: الكابتن في الطريق إليكم!\n\n` +
+                `تم إسناد الطلب للكابتن *${captain}*\n` +
+                `الآن في طريقه لإستلام الطلب رقم *${fullOrderNumber}*\n` +
+                `⏰ وقت الوصول المتوقع: *${timeFormatted}*\n\n` +
+                `شكراً لكم على سرعة التجاوب واحترافيتكم العالية 🩵\n` +
                 `HIGHWAY Delivery | The Fastest Way to Your Orders`;
 
-    window.open(`https://wa.me/?text=${msg}`, '_blank');
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 }
