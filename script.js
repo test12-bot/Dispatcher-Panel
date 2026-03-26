@@ -80,37 +80,9 @@ function openPrepForm(location) {
     navigateTo('prep-form-page');
 }
 
-// === إرسال رسائل الواتساب ===function sendPrepOrder() {
-    const orderNum = document.getElementById('order-number').value.trim();
-    const orderVal = document.getElementById('order-value').value.trim();
-    const notes = document.getElementById('order-notes').value.trim() || "لا يوجد";
-    const finalLocation = (selectedLocation === 'other') ? document.getElementById('custom-location').value.trim() : selectedLocation;
-
-    // التحقق فقط من الحقول الإجبارية (المكان ورقم الطلب)
-    if(!finalLocation || !orderNum) {
-        alert("يرجى تعبئة الحقول الأساسية (المكان ورقم الطلب)");
-        return;
-    }
-
-    // منطق القيمة: إذا كانت فارغة نكتب "غير متوفر تفاصيل"
-    const displayValue = orderVal ? `${orderVal} د.أ` : "غير متوفر تفاصيل";
-
-    const msg = `*📢 طلب جديد متاح | رقم #${orderNum}*\n` +
-                `*🏪 نقطه الاستلام*: ${finalLocation}\n` +
-                `*💵 مطلوب دفعه*: ${displayValue}\n` +
-                `*📝 ملاحظات:*: ${notes}\n\n` +
-                `———————————————\n` +
-                `*⚠️ تعليمات القبول:*\n` +
-                `*1- ⛔️ تأكد من جاهزيتك وتوفر المبلغ.*\n` +
-                `*2- 📍أرسل موقعك المباشر (Live Location) للمنسق.*\n` +
-                `*3- 🔄 سيتم تعيين الكابتن الأقرب بعد 30 ثانية.*\n\n` +
-                `*HIGHWAY Delivery | أسرع طريق لطلباتك 🩵.*`;
-
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-}
-
-
+// === إرسال رسائل الواتساب ===
 function sendPrepOrder() {
+    // استخدام trim() لتجاهل المسافات الفارغة إذا أدخلها المستخدم بالخطأ
     const orderNum = document.getElementById('order-number').value.trim();
     const orderVal = document.getElementById('order-value').value.trim();
     const notes = document.getElementById('order-notes').value.trim() || "لا يوجد";
@@ -119,18 +91,15 @@ function sendPrepOrder() {
         ? document.getElementById('custom-location').value.trim() 
         : selectedLocation;
 
-    // تم إزالة التحقق من القيمة (orderVal) ليكون إدخالها اختيارياً
-    if (!finalLocation || !orderNum) {
-        alert("⚠️ يرجى تعبئة الحقول الأساسية (المكان، رقم الطلب)");
+    if (!finalLocation || !orderNum || !orderVal) {
+        alert("⚠️ يرجى تعبئة الحقول الأساسية (المكان، رقم الطلب، القيمة)");
         return;
     }
 
-    // إذا تم إدخال قيمة نضعها مع "د.أ"، وإذا ترك الحقل فارغاً نكتب "غير متوفر تفاصيل"
-    const finalOrderVal = orderVal ? `${orderVal} د.أ` : "غير متوفر تفاصيل";
-
+    // بناء النص بشكل مقروء ونظيف
     const msg = `*📢 طلب جديد متاح | رقم #${orderNum}*\n` +
                 `*🏪 نقطة الاستلام*: ${finalLocation}\n` +
-                `*💵 مطلوب دفعه*: ${finalOrderVal}\n` + // تم استخدام المتغير الجديد هنا
+                `*💵 مطلوب دفعه*: ${orderVal} د.أ\n` +
                 `*📝 ملاحظات*: ${notes}\n\n` +
                 `———————————————\n` +
                 `*⚠️ تعليمات القبول:*\n` +
@@ -138,6 +107,37 @@ function sendPrepOrder() {
                 `*2- 📍أرسل موقعك المباشر (Live Location) للمنسق.*\n` +
                 `*3- 🔄 سيتم تعيين الكابتن الأقرب بعد 30 ثانية.*\n\n` +
                 `*HIGHWAY Delivery | أسرع طريق لطلباتك 🩵.*`;
+
+    // استخدام encodeURIComponent يحمي الرابط من التكسر بسبب الرموز الخاصة
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function sendConfirmation() {
+    const captain = document.getElementById('captain-name').value.trim();
+    const timeRaw = document.getElementById('arrival-time').value;
+    const suffix = document.getElementById('order-suffix').value.trim();
+    const datePrefix = document.getElementById('date-prefix').innerText;
+
+    if (!captain || !timeRaw || !suffix) {
+        alert("⚠️ يرجى تعبئة كافة الحقول (اسم الكابتن، وقت الوصول، التكملة الخاصة برقم الطلب)");
+        return;
+    }
+
+    // تحويل الوقت من نظام 24 إلى 12 ساعة بشكل رياضي سليم
+    let [hours, minutes] = timeRaw.split(':');
+    let hoursInt = parseInt(hours, 10);
+    const ampm = hoursInt >= 12 ? 'PM' : 'AM';
+    hoursInt = hoursInt % 12 || 12; // تحويل الصفر إلى 12 (منتصف الليل/الظهيرة)
+    const timeFormatted = `${hoursInt}:${minutes} ${ampm}`;
+
+    const fullOrderNumber = `${datePrefix}${suffix}`;
+
+    const msg = `📢 تنبيه: الكابتن في الطريق إليكم!\n\n` +
+                `تم إسناد الطلب للكابتن *${captain}*\n` +
+                `الآن في طريقه لإستلام الطلب رقم *${fullOrderNumber}*\n` +
+                `⏰ وقت الوصول المتوقع: *${timeFormatted}*\n\n` +
+                `شكراً لكم على سرعة التجاوب واحترافيتكم العالية 🩵\n` +
+                `HIGHWAY Delivery | The Fastest Way to Your Orders`;
 
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
 }
