@@ -1,4 +1,3 @@
-// --- وظيفة استخراج التاريخ بصيغة YYMMDD من جهاز المستخدم ---
 function getFormattedDate() {
     const now = new Date();
     const year = now.getFullYear().toString().slice(-2);
@@ -61,7 +60,7 @@ function openPrepForm(location) {
 // --- إرسال طلب تحضير (الحل هنا) ---
 function sendPrepOrder() {
     const orderNum = document.getElementById('order-number').value;
-    const orderVal = document.getElementById('order-value').value;
+    const orderVal = document.getElementById('order-value').value || "غير متوفر تفاصيل";
     const notes = document.getElementById('order-notes').value || "لا يوجد ملاحظات";
     const finalLocation = (selectedLocation === 'other') ? document.getElementById('custom-location').value : selectedLocation;
 
